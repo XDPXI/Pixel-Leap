@@ -29,6 +29,10 @@ public class Main {
             System.exit(1);
         }
 
+        init();
+    }
+
+    private static void init() {
         SwingUtilities.invokeLater(() -> {
             frame = new JFrame("Pixel Leap - Launcher");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,31 +78,10 @@ public class Main {
 
             playButton.addActionListener((ActionEvent e) -> {
                 String selectedVersion = (String) versionDropdown.getSelectedItem();
-                String downloadURL = null;
+                String downloadURL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/" + selectedVersion + ".jar";
 
-                switch (selectedVersion) {
-                    case "1.0.0-Beta.1":
-                        downloadURL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/pixelbound-1.0.0-beta.1-game.jar";
-                        break;
-                    case "1.0.0-Beta.2":
-                        downloadURL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/pixelbound-1.0.0-beta.2.jar";
-                        break;
-                    case "1.0.0-Beta.4":
-                        downloadURL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/Pixelbound-1.0.0-beta.4.jar";
-                        break;
-                    case "Latest Build":
-                        downloadURL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/latest-build.jar";
-                        break;
-                    case null:
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + selectedVersion);
-                }
-
-                if (downloadURL != null) {
-                    progressBar.setVisible(true);
-                    downloadAndRunGame(downloadURL);
-                }
+                progressBar.setVisible(true);
+                downloadAndRunGame(downloadURL, selectedVersion);
             });
 
             mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -114,51 +97,91 @@ public class Main {
         });
     }
 
-    private static void downloadAndRunGame(String fileURL) {
+    private static void downloadAndRunGame(String fileURL, String versionName) {
+
+
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
+                HttpURLConnection connection = null;
                 try {
-                    File tempFile = File.createTempFile("game", ".jar");
-                    tempFile.deleteOnExit();
+                    String userHome = System.getProperty("user.home");
+                    File downloadDir = new File(userHome, "AppData/Roaming/PixelLeap");
 
-                    HttpURLConnection connection = (HttpURLConnection) new URL(fileURL).openConnection();
+                    if (!downloadDir.exists() && !downloadDir.mkdirs()) {
+                        throw new IOException("Failed to create directory: " + downloadDir.getAbsolutePath());
+                    }
+
+                    File gameFile = new File(downloadDir, "game-" + versionName + ".jar");
+
+                    if (gameFile.exists()) {
+                        System.out.println("File already exists: " + gameFile.getAbsolutePath());
+                        runGame(gameFile);
+                        return null;
+                    }
+
+                    connection = (HttpURLConnection) new URL(fileURL).openConnection();
                     connection.setRequestMethod("GET");
 
                     int contentLength = connection.getContentLength();
+                    if (contentLength == -1) {
+                        throw new IOException("Failed to retrieve file size.");
+                    }
+
                     int totalRead = 0;
 
                     try (InputStream in = connection.getInputStream();
-                         FileOutputStream out = new FileOutputStream(tempFile)) {
+                         FileOutputStream out = new FileOutputStream(gameFile)) {
 
                         byte[] buffer = new byte[4096];
                         int bytesRead;
+
                         while ((bytesRead = in.read(buffer)) != -1) {
                             out.write(buffer, 0, bytesRead);
                             totalRead += bytesRead;
+
                             int progress = (int) ((totalRead / (double) contentLength) * 100);
-                            progressBar.setValue(progress);
+                            SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
                         }
                     }
 
-                    System.out.println("Download complete: " + tempFile.getAbsolutePath());
+                    System.out.println("Download complete: " + gameFile.getAbsolutePath());
 
-                    ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", tempFile.getAbsolutePath());
-                    processBuilder.start();
-                    frame.setState(Frame.ICONIFIED);
+                    runGame(gameFile);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame,
+                            "Failed to download or run the game. Please check your connection and try again.",
+                            "Error", JOptionPane.ERROR_MESSAGE));
+                } finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
                 }
                 return null;
             }
 
             @Override
             protected void done() {
-                progressBar.setVisible(false);
+                SwingUtilities.invokeLater(() -> progressBar.setVisible(false));
             }
         };
 
         worker.execute();
+    }
+
+    private static void runGame(File gameFile) {
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", gameFile.getAbsolutePath());
+            processBuilder.start();
+
+            SwingUtilities.invokeLater(() -> frame.setState(Frame.ICONIFIED));
+        } catch (IOException e) {
+            e.printStackTrace();
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame,
+                    "Failed to run the game. Please check your Java installation.",
+                    "Error", JOptionPane.ERROR_MESSAGE));
+        }
     }
 
     private static ArrayList<Object> fetchVersions() {
