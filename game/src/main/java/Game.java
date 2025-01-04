@@ -19,14 +19,16 @@ public class Game {
     private final float playerWidth = 50f;
     private final float playerHeight = 50f;
     private final float gravity = -0.5f;
-    private final float cameraSpeed = 0.1f; // Controls the smoothness of the camera follow
-    private final float zoom = 1f; // Camera zoom (3x)
+    private static final double ORTHO_NEAR = -1.0;
+    private static final double ORTHO_FAR = 1.0;
     private Platform[] platforms = {};
     private long window;
     private float playerVelocityY = 0f;
     private boolean isGrounded = false;
     private float cameraX = 0f;
     private float cameraY = 0f;
+    private final float cameraSpeed = 0.1f;
+    private final float zoom = 1f;
 
     public static void showPauseMenu(long window) {
         isPaused.set(true);
@@ -36,7 +38,6 @@ public class Game {
             fakeFrame.setVisible(true);
             fakeFrame.setLocationRelativeTo(null);
 
-            // Create the pause menu dialog
             pauseDialog = new JDialog(fakeFrame, "Paused", true);
             pauseDialog.setUndecorated(true);
             pauseDialog.setSize(300, 200);
@@ -47,10 +48,8 @@ public class Game {
             pauseDialog.toFront();
             pauseDialog.requestFocus();
 
-            // Center the dialog on the owner
             pauseDialog.setLocationRelativeTo(fakeFrame);
 
-            // Add components to the pause menu
             JPanel contentPanel = new JPanel();
             contentPanel.setLayout(new GridLayout(0, 1, 10, 10));
             contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -66,7 +65,6 @@ public class Game {
                 System.exit(1);
             });
 
-            // Add components to the content panel
             contentPanel.add(titleLabel);
             contentPanel.add(resumeButton);
             contentPanel.add(exitButton);
@@ -122,47 +120,52 @@ public class Game {
         init();
         loop();
 
-        // Clean up
         glfwDestroyWindow(window);
         glfwTerminate();
-        GLFWErrorCallback callback = glfwSetErrorCallback(null);
-        if (callback != null) {
-            callback.free();
+        try (GLFWErrorCallback callback = glfwSetErrorCallback(null)) {
+            if (callback != null) {
+                callback.free();
+            }
         }
     }
 
     private void init() {
-        // Set up error callback
         GLFWErrorCallback.createPrint(System.err).set();
-
-        // Initialize GLFW
         if (!glfwInit()) {
-            throw new IllegalStateException("Unable to initialize GLFW");
+            throw new IllegalStateException("Failed to initialize GLFW");
         }
 
-        // Configure GLFW
-        glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        try {
+            glfwDefaultWindowHints();
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+            glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
-        // Create a window the size of the monitor
-        window = glfwCreateWindow(Main.width, Main.height, "Pixelbound", NULL, NULL);
-        if (window == NULL) {
-            throw new RuntimeException("Failed to create the GLFW window");
+            window = glfwCreateWindow(Main.width, Main.height, "Pixelbound", NULL, NULL);
+            if (window == NULL) {
+                throw new RuntimeException("Failed to create the GLFW window");
+            }
+
+            glfwMakeContextCurrent(window);
+
+            GL.createCapabilities();
+
+            glfwSwapInterval(1);
+
+            glfwShowWindow(window);
+
+            setupProjectionMatrix();
+        } catch (Exception e) {
+            glfwTerminate();
+            throw new RuntimeException("Initialization failed: " + e.getMessage(), e);
         }
+    }
 
-        glfwMakeContextCurrent(window);
-        glfwSwapInterval(1);
-        glfwShowWindow(window);
-
-        // Set up OpenGL capabilities
-        GL.createCapabilities();
-
-        // Set up 2D projection
+    private void setupProjectionMatrix() {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, Main.width / zoom, 0, Main.height / zoom, -1, 1);
+        glOrtho(0, Main.width / zoom, 0, Main.height / zoom, ORTHO_NEAR, ORTHO_FAR);
         glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
     }
 
     private void loop() {
@@ -188,19 +191,19 @@ public class Game {
     private float getAdjustedSpeed(float x, float y) {
         for (Platform platform : this.platforms) {
             if (checkCollision(x, y, platform) && "#FF10F0".equals(platform.color())) {
-                return 10f; // Return 10f if touching the specified color
+                return 10f;
             }
         }
-        return 5f; // Default speed if not touching the target color
+        return 5f;
     }
 
     private float getAdjustedJump(float x, float y) {
         for (Platform platform : this.platforms) {
             if (checkCollision(x, y, platform) && "#FFAA33".equals(platform.color())) {
-                return 20f; // Return 10f if touching the specified color
+                return 20f;
             }
         }
-        return 10f; // Default speed if not touching the target color
+        return 10f;
     }
 
     private void handleMovement() {
@@ -270,11 +273,9 @@ public class Game {
             SwingUtilities.invokeLater(() -> showPauseMenu(window));
         }
 
-        // Apply gravity and update vertical position
         playerVelocityY += gravity;
         playerY += playerVelocityY;
 
-        // Check collision with platforms
         isGrounded = false;
         for (Platform platform : platforms) {
             if (checkCollision(playerX, playerY, platform)) {
@@ -284,14 +285,12 @@ public class Game {
             }
         }
 
-        // Prevent player from falling below the screen
         if (playerY < 0) {
             playerY = 0;
             playerVelocityY = 0;
             isGrounded = true;
         }
 
-        // Smoothly update camera position
         cameraX += (playerX - cameraX - (Main.width / (2 * zoom))) * cameraSpeed;
         cameraY += (playerY - cameraY - (Main.height / (2 * zoom))) * cameraSpeed;
     }
@@ -309,15 +308,12 @@ public class Game {
         glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Apply camera transformations
         glLoadIdentity();
         glScalef(zoom, zoom, 1);
         glTranslatef(-cameraX, -cameraY, 0);
 
-        // Render player
         drawRect(playerX, playerY, playerWidth, playerHeight, "#FF3131");
 
-        // Render platforms
         for (Platform platform : platforms) {
             drawRect(platform.x(), platform.y(), platform.width(), platform.height(), platform.color());
         }

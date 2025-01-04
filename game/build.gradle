@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'dev.xdpxi'
-version = '1.0.0-Beta.5'
+version = '1.0.0-Beta.6'
 
 project.ext.lwjglVersion = "3.3.5"
 project.ext.lwjglNatives = "natives-windows"
