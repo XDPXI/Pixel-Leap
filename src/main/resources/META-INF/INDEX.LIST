@@ -1,0 +1,23 @@
+JarIndex-Version: 1.0
+
+lwjgl-stb.jar
+META-INF
+META-INF/versions
+META-INF/versions/11
+META-INF/windows
+META-INF/windows/arm64
+META-INF/windows/arm64/org
+META-INF/windows/arm64/org/lwjgl
+META-INF/windows/arm64/org/lwjgl/stb
+META-INF/windows/x64
+META-INF/windows/x64/org
+META-INF/windows/x64/org/lwjgl
+META-INF/windows/x64/org/lwjgl/stb
+META-INF/windows/x86
+META-INF/windows/x86/org
+META-INF/windows/x86/org/lwjgl
+META-INF/windows/x86/org/lwjgl/stb
+org
+org/lwjgl
+org/lwjgl/stb
+
