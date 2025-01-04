@@ -329,34 +329,34 @@ public class Game {
     }
 
     private void drawRect(float x, float y, float width, float height, String color) {
-        // Convert the color to RGB
         float[] rgb = hexToRGB(color);
 
-        // Darken the color for the outline
         float[] darkerRgb = {
-                Math.max(rgb[0] * 0.8f, 0), // Reduce brightness to darken
-                Math.max(rgb[1] * 0.8f, 0),
-                Math.max(rgb[2] * 0.8f, 0)
+            Math.max(rgb[0] * 0.8f, 0),
+            Math.max(rgb[1] * 0.8f, 0),
+            Math.max(rgb[2] * 0.8f, 0)
         };
 
         int outlineWidth = 4;
 
-        // Draw the outline (slightly larger rectangle)
-        glColor3f(darkerRgb[0], darkerRgb[1], darkerRgb[2]);
+        drawQuad(x, y, width, height, darkerRgb);
+
+        drawQuad(
+            x + outlineWidth,
+            y + outlineWidth,
+            width - 2 * outlineWidth,
+            height - 2 * outlineWidth,
+            rgb
+        );
+    }
+
+    private void drawQuad(float x, float y, float width, float height, float[] color) {
+        glColor3f(color[0], color[1], color[2]);
         glBegin(GL_QUADS);
-        glVertex2f(x, y); // Expand by 2px
+        glVertex2f(x, y);
         glVertex2f(x + width, y);
         glVertex2f(x + width, y + height);
         glVertex2f(x, y + height);
-        glEnd();
-
-        // Draw the filled rectangle
-        glColor3f(rgb[0], rgb[1], rgb[2]);
-        glBegin(GL_QUADS);
-        glVertex2f(x + outlineWidth, y + outlineWidth);
-        glVertex2f(x + width - outlineWidth, y + outlineWidth);
-        glVertex2f(x + width - outlineWidth, y + height - outlineWidth);
-        glVertex2f(x + outlineWidth, y + height - outlineWidth);
         glEnd();
     }
 
