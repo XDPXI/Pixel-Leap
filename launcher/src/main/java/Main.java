@@ -3,12 +3,10 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class Main {
     private static JFrame frame;
@@ -42,16 +40,24 @@ public class Main {
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
             mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            JComboBox<String> versionDropdown = new JComboBox<>(
-                    new String[]{
-                            "Latest Build",
-                            "1.0.0-Beta.4",
-                            "1.0.0-Beta.2",
-                            "1.0.0-Beta.1"
-                    }
-            );
+            JComboBox<String> versionDropdown = new JComboBox<>();
             versionDropdown.setAlignmentX(Component.CENTER_ALIGNMENT);
             versionDropdown.setMaximumSize(new Dimension(200, 25));
+
+            new Thread(() -> {
+                ArrayList<Object> versions = fetchVersions();
+                if (versions != null) {
+                    SwingUtilities.invokeLater(() -> {
+                        for (Object version : versions) {
+                            versionDropdown.addItem(version.toString());
+                        }
+                    });
+                } else {
+                    SwingUtilities.invokeLater(() -> {
+                        versionDropdown.addItem("Error fetching versions");
+                    });
+                }
+            }).start();
 
             JButton playButton = new JButton("Play");
             playButton.setBounds(150, 100, 199, 40);
@@ -153,5 +159,29 @@ public class Main {
         };
 
         worker.execute();
+    }
+
+    private static ArrayList<Object> fetchVersions() {
+        String urlString = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/builds";
+        ArrayList<Object> versionList = new ArrayList<>();
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    line = line.trim().replace("\"", "").replace(",", "");
+                    if (!line.isEmpty()) {
+                        versionList.add(line);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return versionList;
     }
 }
