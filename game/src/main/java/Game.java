@@ -220,14 +220,20 @@ public class Game {
             playerVelocityY = getAdjustedJump(playerX, playerY);
             isGrounded = false;
         }
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            while (touchingColor(playerX, playerY, "#7F00FF")) {
+        while (touchingColor(playerX, playerY, "#7F00FF")) {
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
                 playerX += 1;
             }
-        }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-            while (touchingColor(playerX, playerY, "#7F00FF")) {
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
                 playerX -= 1;
+            }
+        }
+        while (touchingColor(playerX, playerY, "#000000")) {
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+                playerX -= 5;
+            }
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+                playerX += 5;
             }
         }
     }
