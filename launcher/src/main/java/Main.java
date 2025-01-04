@@ -5,8 +5,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
     private static JFrame frame;
@@ -21,7 +24,7 @@ public class Main {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to set Look and Feel", e);
         }
 
         if (!isSupportedOperatingSystem()) {
@@ -49,11 +52,11 @@ public class Main {
             versionDropdown.setMaximumSize(new Dimension(200, 25));
 
             new Thread(() -> {
-                ArrayList<Object> versions = fetchVersions();
+                ArrayList<String> versions = fetchVersions();
                 if (versions != null) {
                     SwingUtilities.invokeLater(() -> {
-                        for (Object version : versions) {
-                            versionDropdown.addItem(version.toString());
+                        for (String version : versions) {
+                            versionDropdown.addItem(version);
                         }
                     });
                 } else {
@@ -98,8 +101,6 @@ public class Main {
     }
 
     private static void downloadAndRunGame(String fileURL, String versionName) {
-
-
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
@@ -120,7 +121,7 @@ public class Main {
                         return null;
                     }
 
-                    connection = (HttpURLConnection) new URL(fileURL).openConnection();
+                    connection = (HttpURLConnection) new URI(fileURL).toURL().openConnection();
                     connection.setRequestMethod("GET");
 
                     int contentLength = connection.getContentLength();
@@ -148,8 +149,9 @@ public class Main {
                     System.out.println("Download complete: " + gameFile.getAbsolutePath());
 
                     runGame(gameFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException | URISyntaxException e) {
+                    // Use a logger instead of printStackTrace
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Error downloading or running game", e);
                     SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame,
                             "Failed to download or run the game. Please check your connection and try again.",
                             "Error", JOptionPane.ERROR_MESSAGE));
@@ -177,19 +179,19 @@ public class Main {
 
             SwingUtilities.invokeLater(() -> frame.setState(Frame.ICONIFIED));
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to run the game", e);
             SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame,
                     "Failed to run the game. Please check your Java installation.",
                     "Error", JOptionPane.ERROR_MESSAGE));
         }
     }
 
-    private static ArrayList<Object> fetchVersions() {
+    private static ArrayList<String> fetchVersions() {
         String urlString = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/builds";
-        ArrayList<Object> versionList = new ArrayList<>();
+        ArrayList<String> versionList = new ArrayList<>();
         try {
-            URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URI uri = new URI(urlString);
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
             connection.setRequestMethod("GET");
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
@@ -202,7 +204,7 @@ public class Main {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Error fetching versions", e);
             return null;
         }
         return versionList;
