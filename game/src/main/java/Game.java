@@ -111,9 +111,7 @@ public class Game {
         }
     }
 
-    public void run(String mapID, float pX, float pY, int mapNumber) {
-        playerX = pX;
-        playerY = pY;
+    public void run(String mapID, int mapNumber) {
         currentMap = mapNumber;
 
         if (mapID == null) {
@@ -251,12 +249,18 @@ public class Game {
             if (currentMap == 1) {
                 platforms = Maps.getMap("map2");
                 currentMap = 2;
+                playerX = 100f;
+                playerY = 400f;
             } else if (currentMap == 2) {
                 platforms = Maps.getMap("map3");
                 currentMap = 3;
+                playerX = 100f;
+                playerY = 400f;
             } else if (currentMap == 3) {
                 platforms = Maps.getMap("map4");
                 currentMap = 4;
+                playerX = 100f;
+                playerY = 400f;
             }
         }
 

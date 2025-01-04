@@ -32,22 +32,12 @@ public class Main {
         getWidthAndHeight();
         setLookAndFeel();
 
-        float playerX = Game.playerX;
-        float playerY = Game.playerY;
-
         if (mapNumber != null) {
             System.out.println("Starting game with map: " + mapNumber);
-            if (Integer.parseInt(mapNumber) == 2) {
-                playerX = 2850f;
-                playerY = 1700f;
-            } else if (Integer.parseInt(mapNumber) == 3) {
-                playerX = 6100f;
-                playerY = 1700f;
-            }
-            new Game().run("map" + mapNumber, playerX, playerY, Integer.parseInt(mapNumber));
+            new Game().run("map" + mapNumber, Integer.parseInt(mapNumber));
         } else {
             System.out.println("No Selected Map Selected. Starting game with default map: map1");
-            new Game().run("map1", Game.playerX, Game.playerY, Game.currentMap);
+            new Game().run("map1", Game.currentMap);
         }
     }
 
