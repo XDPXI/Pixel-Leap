@@ -18,7 +18,6 @@ public class Game {
     private static JDialog pauseDialog;
     private final float playerWidth = 50f;
     private final float playerHeight = 50f;
-    private final float gravity = -0.5f;
     private static final double ORTHO_NEAR = -1.0;
     private static final double ORTHO_FAR = 1.0;
     private Platform[] platforms = {};
@@ -27,7 +26,6 @@ public class Game {
     private boolean isGrounded = false;
     private float cameraX = 0f;
     private float cameraY = 0f;
-    private final float cameraSpeed = 0.1f;
     private final float zoom = 1f;
 
     public static void showPauseMenu(long window) {
@@ -273,7 +271,7 @@ public class Game {
             SwingUtilities.invokeLater(() -> showPauseMenu(window));
         }
 
-        playerVelocityY += gravity;
+        playerVelocityY += -0.5f;
         playerY += playerVelocityY;
 
         isGrounded = false;
@@ -291,6 +289,7 @@ public class Game {
             isGrounded = true;
         }
 
+        float cameraSpeed = 0.1f;
         cameraX += (playerX - cameraX - (Main.width / (2 * zoom))) * cameraSpeed;
         cameraY += (playerY - cameraY - (Main.height / (2 * zoom))) * cameraSpeed;
     }
