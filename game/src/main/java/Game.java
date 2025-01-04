@@ -233,6 +233,23 @@ public class Game {
         }
     }
 
+    private void switchMaps() {
+        switch (currentMap) {
+            case 1:
+                platforms = Maps.getMap("map2");
+                currentMap = 2;
+                playerX = 100f;
+                playerY = 400f;
+                break;
+            case 2:
+                platforms = Maps.getMap("map3");
+                currentMap = 3;
+                playerX = 100f;
+                playerY = 400f;
+                break;
+        }
+    }
+
     private void update() {
         handleMovement();
         handlePlatforms();
@@ -246,22 +263,7 @@ public class Game {
         }
 
         if (touchingColor(playerX, playerY, "#0FFF50")) {
-            if (currentMap == 1) {
-                platforms = Maps.getMap("map2");
-                currentMap = 2;
-                playerX = 100f;
-                playerY = 400f;
-            } else if (currentMap == 2) {
-                platforms = Maps.getMap("map3");
-                currentMap = 3;
-                playerX = 100f;
-                playerY = 400f;
-            } else if (currentMap == 3) {
-                platforms = Maps.getMap("map4");
-                currentMap = 4;
-                playerX = 100f;
-                playerY = 400f;
-            }
+            switchMaps();
         }
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
