@@ -2,9 +2,9 @@ public class Maps {
     // Map 1
     public static final Platform[] map1 = {
             // Dirt - Brown
-            new Platform(-1_073_741_823f, -2000f, 2_147_483_647f, 2000f, "#7B3F00"),
+            new Platform(-5000f, -2000f, 10000f, 2000f, "#7B3F00"),
             // Grass - Green
-            new Platform(-1_073_741_823f, -100f, 2_147_483_647f, 100f, "#228B22"),
+            new Platform(-5000f, -100f, 10000f, 100f, "#228B22"),
 
             // Normal - Gray
             new Platform(200f, 100f, 200f, 20f, "#4b6371"),
@@ -35,15 +35,16 @@ public class Maps {
             new Platform(2850f, 1700f, 100f, 20f, "#0FFF50"),
 
             // Void - Black
-            new Platform(-5000f, -1_073_741_823f, 4000f, 2_147_483_647f, "#000000")
+            new Platform(-5000f, -3000, 4000f, 6000f, "#000000"),
+            new Platform(4000f, -4000, 4000f, 8000f, "#000000")
     };
 
     // Map 2
     public static final Platform[] map2 = {
             // Dirt - Brown
-            new Platform(-1_073_741_823f, -2000f, 2_147_483_647f, 2000f, "#7B3F00"),
+            new Platform(-5000f, -2000f, 10000f, 2000f, "#7B3F00"),
             // Grass - Green
-            new Platform(-1_073_741_823f, -100f, 2_147_483_647f, 100f, "#228B22"),
+            new Platform(-5000f, -100f, 10000f, 100f, "#228B22"),
 
             // Lava - Red
             new Platform(300f, -2000f, 2000f, 2000f, "#FF2400"),
@@ -66,18 +67,20 @@ public class Maps {
             new Platform(3300f, 0f, 100f, 20f, "#0FFF50"),
 
             // Void - Black
-            new Platform(-5000, -1_073_741_823f, 4000, 2_147_483_647f, "#000000")
+            new Platform(-5000f, -2000, 4000f, 4000f, "#000000"),
+            new Platform(4000f, -2000, 4000f, 4000f, "#000000")
     };
 
     // Map 3
     public static final Platform[] map3 = {
             // Dirt - Brown
-            new Platform(-1_073_741_823f, -2000f, 2_147_483_647f, 2000f, "#7B3F00"),
+            new Platform(-5000f, -2000f, 10000f, 2000f, "#7B3F00"),
             // Grass - Green
-            new Platform(-1_073_741_823f, -100f, 2_147_483_647f, 100f, "#228B22"),
+            new Platform(-5000f, -100f, 10000f, 100f, "#228B22"),
 
             // Void - Black
-            new Platform(-5000f, -1_073_741_823f, 4000f, 2_147_483_647f, "#000000")
+            new Platform(-5000f, -2000, 4000f, 4000f, "#000000"),
+            new Platform(4000f, -2000, 4000f, 4000f, "#000000")
     };
 
     public static Platform[] getMap(String mapID) {
