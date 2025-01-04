@@ -59,9 +59,7 @@ public class Game {
             resumeButton.addActionListener(e -> hidePauseMenu());
 
             JButton exitButton = createCustomButton("Exit Game");
-            exitButton.addActionListener(e -> {
-                System.exit(1);
-            });
+            exitButton.addActionListener(e -> System.exit(1));
 
             contentPanel.add(titleLabel);
             contentPanel.add(resumeButton);
@@ -271,7 +269,7 @@ public class Game {
             SwingUtilities.invokeLater(() -> showPauseMenu(window));
         }
 
-        playerVelocityY += -0.5f;
+        playerVelocityY -= 0.5f;
         playerY += playerVelocityY;
 
         isGrounded = false;
