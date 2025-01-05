@@ -1,4 +1,11 @@
+package dev.xdpxi.pixelleap;
+
+import dev.xdpxi.pixelleap.Entities.Player;
+
 public class Maps {
+    public static Platform[] platforms = {};
+    public static int currentMap = 1;
+
     // Map 1
     public static final Platform[] map1 = {
             // Dirt - Brown
@@ -89,5 +96,22 @@ public class Maps {
             case "map3" -> map3;
             default -> map1;
         };
+    }
+
+    public static void switchMaps() {
+        switch (currentMap) {
+            case 1:
+                platforms = Maps.getMap("map2");
+                currentMap = 2;
+                Player.X = 100f;
+                Player.Y = 400f;
+                break;
+            case 2:
+                platforms = Maps.getMap("map3");
+                currentMap = 3;
+                Player.X = 100f;
+                Player.Y = 400f;
+                break;
+        }
     }
 }

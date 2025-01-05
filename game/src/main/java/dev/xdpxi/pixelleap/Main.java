@@ -1,3 +1,5 @@
+package dev.xdpxi.pixelleap;
+
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
@@ -35,7 +37,7 @@ public class Main {
             new Game().run("map" + mapNumber, Integer.parseInt(mapNumber));
         } else {
             System.out.println("No Selected Map Selected. Starting game with default map: map1");
-            new Game().run("map1", Game.currentMap);
+            new Game().run("map1", Maps.currentMap);
         }
     }
 
