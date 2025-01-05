@@ -105,6 +105,10 @@ public class Game {
         }
     }
 
+    public static void main(String[] args) {
+        new Game().run("map1", currentMap);
+    }
+
     public void run(String mapID, int mapNumber) {
         currentMap = mapNumber;
 
@@ -328,25 +332,37 @@ public class Game {
     }
 
     private void drawRect(float x, float y, float width, float height, String color) {
-        float[] rgb = hexToRGB(color);
+        if (isRectVisible(x, y, width, height)) {
+            float[] rgb = hexToRGB(color);
 
-        float[] darkerRgb = {
-            Math.max(rgb[0] * 0.8f, 0),
-            Math.max(rgb[1] * 0.8f, 0),
-            Math.max(rgb[2] * 0.8f, 0)
-        };
+            float[] darkerRgb = {
+                    Math.max(rgb[0] * 0.8f, 0),
+                    Math.max(rgb[1] * 0.8f, 0),
+                    Math.max(rgb[2] * 0.8f, 0)
+            };
 
-        int outlineWidth = 4;
+            int outlineWidth = 4;
 
-        drawQuad(x, y, width, height, darkerRgb);
+            drawQuad(x, y, width, height, darkerRgb);
 
-        drawQuad(
-            x + outlineWidth,
-            y + outlineWidth,
-            width - 2 * outlineWidth,
-            height - 2 * outlineWidth,
-            rgb
-        );
+            drawQuad(
+                    x + outlineWidth,
+                    y + outlineWidth,
+                    width - 2 * outlineWidth,
+                    height - 2 * outlineWidth,
+                    rgb
+            );
+        }
+    }
+
+    private boolean isRectVisible(float x, float y, float width, float height) {
+        float screenLeft = cameraX;
+        float screenRight = cameraX + Main.width / zoom;
+        float screenBottom = cameraY;
+        float screenTop = cameraY + Main.height / zoom;
+
+        return (x < screenRight && x + width > screenLeft &&
+                y < screenTop && y + height > screenBottom);
     }
 
     private void drawQuad(float x, float y, float width, float height, float[] color) {
