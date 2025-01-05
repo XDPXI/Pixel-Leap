@@ -4,10 +4,18 @@ plugins {
 }
 
 group = 'dev.xdpxi'
-version = '1.0.0-Beta.6'
+version = '1.0.0-Beta.7'
 
-project.ext.lwjglVersion = "3.3.5"
-project.ext.lwjglNatives = "natives-windows"
+import org.gradle.internal.os.OperatingSystem
+project.ext.lwjglVersion = "3.3.6"
+switch (OperatingSystem.current()) {
+	case OperatingSystem.WINDOWS:
+		def osArch = System.getProperty("os.arch")
+		project.ext.lwjglNatives = osArch.contains("64")
+			? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
+			: "natives-windows-x86"
+		break
+}
 
 repositories {
     mavenCentral()
