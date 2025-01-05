@@ -6,7 +6,7 @@ import java.awt.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Game {
@@ -224,20 +224,20 @@ public class Game {
             playerVelocityY = getAdjustedJump(playerX, playerY);
             isGrounded = false;
         }
-        while (touchingColor(playerX, playerY, "#7F00FF")) {
-            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-                playerX += 1;
-            }
-            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-                playerX -= 1;
-            }
+
+        float adjustment = 0;
+        if (touchingColor(playerX, playerY, "#7F00FF")) {
+            adjustment = 1;
+        } else if (touchingColor(playerX, playerY, "#000000")) {
+            adjustment = -5;
         }
-        while (touchingColor(playerX, playerY, "#000000")) {
+
+        if (adjustment != 0) {
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-                playerX -= 5;
+                playerX += adjustment;
             }
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-                playerX += 5;
+                playerX -= adjustment;
             }
         }
     }
