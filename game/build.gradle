@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'dev.xdpxi'
-version = '1.0.0-Beta.7'
+version = '1.0.0-Beta.8'
 
 import org.gradle.internal.os.OperatingSystem
 project.ext.lwjglVersion = "3.3.6"

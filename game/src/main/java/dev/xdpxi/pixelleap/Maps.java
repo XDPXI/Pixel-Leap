@@ -103,14 +103,12 @@ public class Maps {
             case 1:
                 platforms = Maps.getMap("map2");
                 currentMap = 2;
-                Player.X = 100f;
-                Player.Y = 400f;
+                Player.resetPos();
                 break;
             case 2:
                 platforms = Maps.getMap("map3");
                 currentMap = 3;
-                Player.X = 100f;
-                Player.Y = 400f;
+                Player.resetPos();
                 break;
         }
     }

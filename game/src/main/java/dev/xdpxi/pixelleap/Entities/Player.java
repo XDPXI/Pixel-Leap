@@ -1,7 +1,6 @@
 package dev.xdpxi.pixelleap.Entities;
 
 import dev.xdpxi.pixelleap.Game;
-import dev.xdpxi.pixelleap.Main;
 import dev.xdpxi.pixelleap.Maps;
 import dev.xdpxi.pixelleap.Platform;
 
@@ -12,7 +11,7 @@ public class Player {
     public static final float Height = 50f;
     public static boolean isGrounded = false;
     public static float X = 100f;
-    public static float Y = 400f;
+    public static float Y = 100f;
     public static float velocityY = 0f;
 
     public static void handleMovement() {
@@ -36,29 +35,27 @@ public class Player {
             velocityY = getAdjustedJump();
             isGrounded = false;
         }
-        while (checkColorCollision("#7F00FF")) {
-            if (glfwGetKey(Game.window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(Game.window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-                X += 1;
-            }
-            if (glfwGetKey(Game.window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(Game.window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-                X -= 1;
-            }
-        }
-        while (checkColorCollision("#000000")) {
-            if (glfwGetKey(Game.window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(Game.window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-                X -= 5;
-            }
-            if (glfwGetKey(Game.window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(Game.window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-                X += 5;
-            }
-        }
+        handleColorCollision("#7F00FF", 1);
+        handleColorCollision("#000000", -5);
         if (checkColorCollision("#FF2400")) {
-            try {
-                Main.restartApplication(Maps.currentMap);
-            } catch (Exception e) {
-                System.err.println("Error restarting application: " + e.getMessage());
+            resetPos();
+        }
+    }
+    
+    private static void handleColorCollision(String color, int moveAmount) {
+        while (checkColorCollision(color)) {
+            if (isKeyPressed(GLFW_KEY_D, GLFW_KEY_RIGHT)) {
+                X += moveAmount;
+            }
+            if (isKeyPressed(GLFW_KEY_A, GLFW_KEY_LEFT)) {
+                X -= moveAmount;
             }
         }
+    }
+    
+    public static void resetPos() {
+        X = 100f;
+        Y = 100f;
     }
 
     public static boolean checkColorCollision(String color) {
