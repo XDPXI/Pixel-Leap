@@ -3,9 +3,6 @@ package dev.xdpxi.pixelleap;
 import dev.xdpxi.pixelleap.Entities.Player;
 
 public class Maps {
-    public static Platform[] platforms = {};
-    public static int currentMap = 1;
-
     // Map 1
     public static final Platform[] map1 = {
             // Dirt - Brown
@@ -45,7 +42,6 @@ public class Maps {
             new Platform(-5000f, -3000, 4000f, 6000f, "#000000"),
             new Platform(4000f, -4000, 4000f, 8000f, "#000000")
     };
-
     // Map 2
     public static final Platform[] map2 = {
             // Dirt - Brown
@@ -77,7 +73,6 @@ public class Maps {
             new Platform(-5000f, -2000, 4000f, 4000f, "#000000"),
             new Platform(4000f, -2000, 4000f, 4000f, "#000000")
     };
-
     // Map 3
     public static final Platform[] map3 = {
             // Dirt - Brown
@@ -89,6 +84,8 @@ public class Maps {
             new Platform(-5000f, -2000, 4000f, 4000f, "#000000"),
             new Platform(4000f, -2000, 4000f, 4000f, "#000000")
     };
+    public static Platform[] platforms = {};
+    public static int currentMap = 1;
 
     public static Platform[] getMap(String mapID) {
         return switch (mapID) {

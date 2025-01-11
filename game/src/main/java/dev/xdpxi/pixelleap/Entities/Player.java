@@ -41,7 +41,7 @@ public class Player {
             resetPos();
         }
     }
-    
+
     private static void handleColorCollision(String color, int moveAmount) {
         while (checkColorCollision(color)) {
             if (isKeyPressed(GLFW_KEY_D, GLFW_KEY_RIGHT)) {
@@ -52,7 +52,7 @@ public class Player {
             }
         }
     }
-    
+
     public static void resetPos() {
         X = 100f;
         Y = 100f;

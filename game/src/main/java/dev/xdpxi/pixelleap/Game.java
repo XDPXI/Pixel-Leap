@@ -1,7 +1,7 @@
 package dev.xdpxi.pixelleap;
 
-import dev.xdpxi.pixelleap.GUI.PauseMenu;
 import dev.xdpxi.pixelleap.Entities.Player;
+import dev.xdpxi.pixelleap.GUI.PauseMenu;
 import dev.xdpxi.pixelleap.Util.Hex;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;

@@ -21,8 +21,7 @@ public class Main {
             if ("--map".equals(args[i]) || args[i].startsWith("--map=")) {
                 if (args[i].contains("=")) {
                     mapNumber = args[i].split("=")[1];
-                }
-                else if (i + 1 < args.length) {
+                } else if (i + 1 < args.length) {
                     mapNumber = args[i + 1];
                 }
                 break;

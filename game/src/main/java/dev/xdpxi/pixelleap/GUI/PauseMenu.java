@@ -5,8 +5,8 @@ import java.awt.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PauseMenu {
-    private static final JFrame fakeFrame = new JFrame();
     public static final AtomicBoolean isPaused = new AtomicBoolean(false);
+    private static final JFrame fakeFrame = new JFrame();
     private static JDialog pauseDialog;
 
     public static void show(long window) {
