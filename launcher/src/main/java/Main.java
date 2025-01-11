@@ -10,25 +10,27 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class Main {
+    private static final String GAME_DOWNLOAD_DIR = "AppData/Roaming/PixelLeap";
+    private static final String VERSION_URL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/builds";
+    private static final String GAME_BASE_URL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/";
     private static JFrame frame;
     private static JProgressBar progressBar;
 
     public static void main(String[] args) {
+        setLookAndFeel();
+        if (!isSupportedOperatingSystem()) {
+            showErrorDialog("Your operating system is not supported!");
+            System.exit(1);
+        }
+        initUI();
+    }
+
+    private static void setLookAndFeel() {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (Exception e) {
             Log.error("Failed to set Look and Feel", e);
         }
-
-        if (!isSupportedOperatingSystem()) {
-            JOptionPane.showMessageDialog(null,
-                    "Your operating system is not supported!",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
-        }
-
-        initUI();
     }
 
     private static boolean isSupportedOperatingSystem() {
@@ -44,35 +46,37 @@ public class Main {
             frame.setLayout(new BorderLayout());
             frame.setLocationRelativeTo(null);
 
-            JPanel mainPanel = new JPanel();
-            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-            mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-            JComboBox<String> versionDropdown = createVersionDropdown();
-
-            JButton playButton = createPlayButton(versionDropdown);
-
-            progressBar = new JProgressBar(0, 100);
-            progressBar.setStringPainted(true);
-            progressBar.setVisible(false);
-
-            mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-            mainPanel.add(versionDropdown);
-            mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-            mainPanel.add(playButton);
-            mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-            mainPanel.add(progressBar);
-
+            JPanel mainPanel = createMainPanel();
             frame.add(mainPanel, BorderLayout.CENTER);
             frame.setVisible(true);
         });
+    }
+
+    private static JPanel createMainPanel() {
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JComboBox<String> versionDropdown = createVersionDropdown();
+        JButton playButton = createPlayButton(versionDropdown);
+
+        progressBar = createProgressBar();
+
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mainPanel.add(versionDropdown);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainPanel.add(playButton);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainPanel.add(progressBar);
+
+        return mainPanel;
     }
 
     private static JComboBox<String> createVersionDropdown() {
         JComboBox<String> versionDropdown = new JComboBox<>();
         versionDropdown.setAlignmentX(Component.CENTER_ALIGNMENT);
         versionDropdown.setMaximumSize(new Dimension(200, 25));
-    
+
         new Thread(() -> {
             ArrayList<String> versions = fetchVersions();
             SwingUtilities.invokeLater(() -> {
@@ -83,7 +87,7 @@ public class Main {
                 }
             });
         }).start();
-    
+
         return versionDropdown;
     }
 
@@ -98,22 +102,28 @@ public class Main {
         playButton.addActionListener((ActionEvent e) -> {
             String selectedVersion = (String) versionDropdown.getSelectedItem();
             if (selectedVersion != null && !selectedVersion.equals("Error fetching versions")) {
-                String downloadURL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/" + selectedVersion + ".jar";
+                String downloadURL = GAME_BASE_URL + selectedVersion + ".jar";
                 progressBar.setVisible(true);
                 downloadAndRunGame(downloadURL, selectedVersion);
             } else {
-                JOptionPane.showMessageDialog(frame, "Invalid version selected.", "Error", JOptionPane.ERROR_MESSAGE);
+                showErrorDialog("Invalid version selected.");
             }
         });
 
         return playButton;
     }
 
+    private static JProgressBar createProgressBar() {
+        JProgressBar bar = new JProgressBar(0, 100);
+        bar.setStringPainted(true);
+        bar.setVisible(false);
+        return bar;
+    }
+
     private static void downloadAndRunGame(String fileURL, String versionName) {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                HttpURLConnection connection = null;
                 try {
                     File gameFile = prepareGameFile(versionName);
                     if (gameFile.exists()) {
@@ -122,19 +132,11 @@ public class Main {
                         return null;
                     }
 
-                    connection = (HttpURLConnection) new URI(fileURL).toURL().openConnection();
-                    connection.setRequestMethod("GET");
-
-                    int contentLength = connection.getContentLength();
-                    if (contentLength <= 0) throw new IOException("Failed to retrieve file size.");
-
-                    downloadFile(connection, gameFile, contentLength);
+                    downloadFile(fileURL, gameFile);
                     runGame(gameFile);
                 } catch (IOException | URISyntaxException e) {
                     Log.error("Error downloading or running game", e);
-                    SwingUtilities.invokeLater(() -> showErrorDialog("Failed to download or run the game. Please check your connection and try again."));
-                } finally {
-                    if (connection != null) connection.disconnect();
+                    showErrorDialog("Failed to download or run the game. Please check your connection and try again.");
                 }
                 return null;
             }
@@ -149,17 +151,20 @@ public class Main {
     }
 
     private static File prepareGameFile(String versionName) throws IOException {
-        String userHome = System.getProperty("user.home");
-        File downloadDir = new File(userHome, "AppData/Roaming/PixelLeap");
-
+        File downloadDir = new File(System.getProperty("user.home"), GAME_DOWNLOAD_DIR);
         if (!downloadDir.exists() && !downloadDir.mkdirs()) {
             throw new IOException("Failed to create directory: " + downloadDir.getAbsolutePath());
         }
-
         return new File(downloadDir, "game-" + versionName + ".jar");
     }
 
-    private static void downloadFile(HttpURLConnection connection, File gameFile, int contentLength) throws IOException {
+    private static void downloadFile(String fileURL, File gameFile) throws IOException, URISyntaxException {
+        HttpURLConnection connection = (HttpURLConnection) new URI(fileURL).toURL().openConnection();
+        connection.setRequestMethod("GET");
+
+        int contentLength = connection.getContentLength();
+        if (contentLength <= 0) throw new IOException("Failed to retrieve file size.");
+
         try (InputStream in = connection.getInputStream(); FileOutputStream out = new FileOutputStream(gameFile)) {
             byte[] buffer = new byte[4096];
             int totalRead = 0, bytesRead;
@@ -171,28 +176,28 @@ public class Main {
                 int progress = (int) ((totalRead / (double) contentLength) * 100);
                 SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
             }
+        } finally {
+            connection.disconnect();
         }
     }
 
     private static void runGame(File gameFile) {
         try {
             new ProcessBuilder("java", "-jar", gameFile.getAbsolutePath()).start();
-            SwingUtilities.invokeLater(() -> frame.setState(Frame.ICONIFIED));
+            frame.setState(Frame.ICONIFIED);
         } catch (IOException e) {
             Log.error("Failed to run the game", e);
-            SwingUtilities.invokeLater(() -> showErrorDialog("Failed to run the game. Please check your Java installation."));
+            showErrorDialog("Failed to run the game. Please check your Java installation.");
         }
     }
 
     private static void showErrorDialog(String message) {
-        JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE));
     }
 
     private static ArrayList<String> fetchVersions() {
-        String urlString = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/builds";
         ArrayList<String> versionList = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new URI(urlString).toURL().openStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new URI(VERSION_URL).toURL().openStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String trimmed = line.trim().replace("\"", "").replace(",", "");
@@ -201,7 +206,6 @@ public class Main {
         } catch (Exception e) {
             Log.error("Error fetching versions", e);
         }
-
         return versionList;
     }
 }
