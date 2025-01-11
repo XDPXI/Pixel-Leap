@@ -15,6 +15,7 @@ public class Main {
     private static final String GAME_BASE_URL = "https://raw.githubusercontent.com/XDPXI/Pixel-Leap/refs/heads/main/game/builds/";
     private static JFrame frame;
     private static JProgressBar progressBar;
+    private static JButton playButton;
 
     public static void main(String[] args) {
         setLookAndFeel();
@@ -29,7 +30,7 @@ public class Main {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (Exception e) {
-            Log.error("Failed to set Look and Feel", e);
+            Log.error("Error setting look and feel", e);
         }
     }
 
@@ -42,9 +43,10 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             frame = new JFrame("Pixel Leap - Launcher");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(325, 175);
+            frame.setSize(330, 180);
             frame.setLayout(new BorderLayout());
             frame.setLocationRelativeTo(null);
+            frame.setResizable(false);
 
             JPanel mainPanel = createMainPanel();
             frame.add(mainPanel, BorderLayout.CENTER);
@@ -55,14 +57,13 @@ public class Main {
     private static JPanel createMainPanel() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JComboBox<String> versionDropdown = createVersionDropdown();
         JButton playButton = createPlayButton(versionDropdown);
-
         progressBar = createProgressBar();
 
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         mainPanel.add(versionDropdown);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         mainPanel.add(playButton);
@@ -75,7 +76,7 @@ public class Main {
     private static JComboBox<String> createVersionDropdown() {
         JComboBox<String> versionDropdown = new JComboBox<>();
         versionDropdown.setAlignmentX(Component.CENTER_ALIGNMENT);
-        versionDropdown.setMaximumSize(new Dimension(200, 25));
+        versionDropdown.setMaximumSize(new Dimension(250, 30));
 
         new Thread(() -> {
             ArrayList<String> versions = fetchVersions();
@@ -92,18 +93,20 @@ public class Main {
     }
 
     private static JButton createPlayButton(JComboBox<String> versionDropdown) {
-        JButton playButton = new JButton("Play");
+        playButton = new JButton("Play");
         playButton.setFont(new Font("Arial", Font.BOLD, 14));
         playButton.setFocusPainted(false);
         playButton.setBackground(new Color(70, 73, 75));
         playButton.setForeground(Color.WHITE);
         playButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        playButton.setPreferredSize(new Dimension(120, 40));
 
         playButton.addActionListener((ActionEvent e) -> {
             String selectedVersion = (String) versionDropdown.getSelectedItem();
             if (selectedVersion != null && !selectedVersion.equals("Error fetching versions")) {
                 String downloadURL = GAME_BASE_URL + selectedVersion + ".jar";
                 progressBar.setVisible(true);
+                playButton.setVisible(false);
                 downloadAndRunGame(downloadURL, selectedVersion);
             } else {
                 showErrorDialog("Invalid version selected.");
@@ -127,7 +130,6 @@ public class Main {
                 try {
                     File gameFile = prepareGameFile(versionName);
                     if (gameFile.exists()) {
-                        Log.info("File already exists: " + gameFile.getAbsolutePath());
                         runGame(gameFile);
                         return null;
                     }
@@ -135,7 +137,6 @@ public class Main {
                     downloadFile(fileURL, gameFile);
                     runGame(gameFile);
                 } catch (IOException | URISyntaxException e) {
-                    Log.error("Error downloading or running game", e);
                     showErrorDialog("Failed to download or run the game. Please check your connection and try again.");
                 }
                 return null;
@@ -144,6 +145,7 @@ public class Main {
             @Override
             protected void done() {
                 progressBar.setVisible(false);
+                playButton.setVisible(true);
             }
         };
 
@@ -186,7 +188,6 @@ public class Main {
             new ProcessBuilder("java", "-jar", gameFile.getAbsolutePath()).start();
             frame.setState(Frame.ICONIFIED);
         } catch (IOException e) {
-            Log.error("Failed to run the game", e);
             showErrorDialog("Failed to run the game. Please check your Java installation.");
         }
     }
