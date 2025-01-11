@@ -2,7 +2,6 @@ package dev.xdpxi.pixelleap;
 
 import dev.xdpxi.pixelleap.Entities.Player;
 import dev.xdpxi.pixelleap.GUI.PauseMenu;
-import dev.xdpxi.pixelleap.Util.Hex;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -137,11 +136,18 @@ public class Game {
 
     private void drawRect(float x, float y, float width, float height, String color) {
         if (isRectVisible(x, y, width, height)) {
-            float[] rgb = Hex.toRGB(color);
+            float[] rgb = hexToRGB(color);
             float[] darkerRgb = {Math.max(rgb[0] * 0.8f, 0), Math.max(rgb[1] * 0.8f, 0), Math.max(rgb[2] * 0.8f, 0)};
             drawQuad(x, y, width, height, darkerRgb);
             drawQuad(x + 4, y + 4, width - 8, height - 8, rgb);
         }
+    }
+
+    public static float[] hexToRGB(String hex) {
+        int r = Integer.parseInt(hex.substring(1, 3), 16);
+        int g = Integer.parseInt(hex.substring(3, 5), 16);
+        int b = Integer.parseInt(hex.substring(5, 7), 16);
+        return new float[]{r / 255f, g / 255f, b / 255f};
     }
 
     private boolean isRectVisible(float x, float y, float width, float height) {
