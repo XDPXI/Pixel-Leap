@@ -1,6 +1,7 @@
 package dev.xdpxi.pixelleap;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import dev.xdpxi.pixelleap.Util.Log;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,10 +33,10 @@ public class Main {
         setLookAndFeel();
 
         if (mapNumber != null) {
-            System.out.println("Starting game with map: " + mapNumber);
+            Log.info("Starting game with map: " + mapNumber);
             new Game().run("map" + mapNumber, Integer.parseInt(mapNumber));
         } else {
-            System.out.println("No Selected Map Selected. Starting game with default map: map1");
+            Log.info("No Selected Map Selected. Starting game with default map: map1");
             new Game().run("map1", Maps.currentMap);
         }
     }
@@ -47,10 +48,9 @@ public class Main {
 
         for (int i = 0; i < devices.length; i++) {
             DisplayMode displayMode = devices[i].getDisplayMode();
-            System.out.println("Monitor " + (i + 1) + ":");
-            System.out.println("Width: " + displayMode.getWidth() + " px");
-            System.out.println("Height: " + displayMode.getHeight() + " px");
-            System.out.println();
+            Log.info("Monitor " + (i + 1) + ":");
+            Log.info("Width: " + displayMode.getWidth() + " px");
+            Log.info("Height: " + displayMode.getHeight() + " px");
 
             width = displayMode.getWidth();
             height = displayMode.getHeight();
@@ -77,7 +77,7 @@ public class Main {
         String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 
         File currentFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        System.out.println("Current file: " + currentFile);
+        Log.info("Current file: " + currentFile);
 
         if (!currentFile.exists()) {
             throw new IOException("Unable to locate the running application file.");
