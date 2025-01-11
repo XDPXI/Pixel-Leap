@@ -8,11 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
-    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
     private static JFrame frame;
     private static JProgressBar progressBar;
 
@@ -20,7 +17,7 @@ public class Main {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to set Look and Feel", e);
+            Log.error("Failed to set Look and Feel", e);
         }
 
         if (!isSupportedOperatingSystem()) {
@@ -120,7 +117,7 @@ public class Main {
                 try {
                     File gameFile = prepareGameFile(versionName);
                     if (gameFile.exists()) {
-                        LOGGER.info("File already exists: " + gameFile.getAbsolutePath());
+                        Log.info("File already exists: " + gameFile.getAbsolutePath());
                         runGame(gameFile);
                         return null;
                     }
@@ -134,7 +131,7 @@ public class Main {
                     downloadFile(connection, gameFile, contentLength);
                     runGame(gameFile);
                 } catch (IOException | URISyntaxException e) {
-                    LOGGER.log(Level.SEVERE, "Error downloading or running game", e);
+                    Log.error("Error downloading or running game", e);
                     SwingUtilities.invokeLater(() -> showErrorDialog("Failed to download or run the game. Please check your connection and try again."));
                 } finally {
                     if (connection != null) connection.disconnect();
@@ -182,7 +179,7 @@ public class Main {
             new ProcessBuilder("java", "-jar", gameFile.getAbsolutePath()).start();
             SwingUtilities.invokeLater(() -> frame.setState(Frame.ICONIFIED));
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to run the game", e);
+            Log.error("Failed to run the game", e);
             SwingUtilities.invokeLater(() -> showErrorDialog("Failed to run the game. Please check your Java installation."));
         }
     }
@@ -202,7 +199,7 @@ public class Main {
                 if (!trimmed.isEmpty()) versionList.add(trimmed);
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error fetching versions", e);
+            Log.error("Error fetching versions", e);
         }
 
         return versionList;
