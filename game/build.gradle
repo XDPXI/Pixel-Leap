@@ -48,6 +48,9 @@ application {
 }
 
 jar {
+	from("LICENSE") {
+		rename { "${it}_${project.base.archivesName.get()}"}
+	}
     manifest {
         attributes(
             'Main-Class': 'dev.xdpxi.pixelleap.Main'
