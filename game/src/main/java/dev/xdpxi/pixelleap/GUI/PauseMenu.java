@@ -30,9 +30,9 @@ public class PauseMenu {
         pauseDialog.setLocationRelativeTo(fakeFrame);
         JPanel contentPanel = new JPanel(new GridLayout(0, 1, 10, 10));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        contentPanel.add(new JLabel("dev.xdpxi.pixelleap.Game Paused", SwingConstants.CENTER));
+        contentPanel.add(new JLabel("Game Paused", SwingConstants.CENTER));
         contentPanel.add(createButton("Resume", PauseMenu::hide));
-        contentPanel.add(createButton("Exit dev.xdpxi.pixelleap.Game", () -> System.exit(1)));
+        contentPanel.add(createButton("Exit Game", () -> System.exit(1)));
         pauseDialog.add(contentPanel);
         pauseDialog.toFront();
         pauseDialog.requestFocus();
