@@ -2,6 +2,7 @@ package dev.xdpxi.pixelleap;
 
 import dev.xdpxi.pixelleap.Entities.Player;
 import dev.xdpxi.pixelleap.GUI.PauseMenu;
+import dev.xdpxi.pixelleap.Util.Log;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -18,12 +19,15 @@ public class Game {
     private float cameraY = 0f;
 
     public static void main(String[] args) {
+        Log.info("Game main method called");
         new Game().run("map1", Maps.currentMap);
     }
 
     public void run(String mapID, int mapNumber) {
+        Log.info("Starting game with mapID: " + mapID + ", mapNumber: " + mapNumber);
         Maps.currentMap = mapNumber;
         if (mapID == null) {
+            Log.error("MapID is null. Exiting game.");
             System.exit(1);
         }
         Maps.platforms = Maps.getMap(mapID);
@@ -31,6 +35,7 @@ public class Game {
         init();
         loop();
 
+        Log.info("Game loop ended. Cleaning up resources.");
         glfwDestroyWindow(window);
         glfwTerminate();
         try (GLFWErrorCallback callback = glfwSetErrorCallback(null)) {
@@ -38,33 +43,43 @@ public class Game {
                 callback.free();
             }
         }
+        Log.info("Game resources cleaned up. Exiting.");
     }
 
     private void init() {
+        Log.info("Initializing game");
         GLFWErrorCallback.createPrint(System.err).set();
         if (!glfwInit()) {
+            Log.error("Failed to initialize GLFW");
             throw new IllegalStateException("Failed to initialize GLFW");
         }
 
         try {
+            Log.info("Setting up GLFW window hints");
             glfwDefaultWindowHints();
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
             glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
+            Log.info("Creating GLFW window");
             window = glfwCreateWindow(Main.width, Main.height, "Pixelbound", NULL, NULL);
             if (window == NULL) {
+                Log.error("Failed to create the GLFW window");
                 throw new RuntimeException("Failed to create the GLFW window");
             }
 
             glfwMakeContextCurrent(window);
 
+            Log.info("Creating OpenGL capabilities");
             GL.createCapabilities();
-            glfwSwapInterval(1); // VSync
+            glfwSwapInterval(1);
 
             glfwShowWindow(window);
 
+            Log.info("Setting up projection matrix");
             setupProjectionMatrix();
+            Log.info("Game initialization completed successfully");
         } catch (Exception e) {
+            Log.error("Initialization failed: " + e.getMessage(), e);
             glfwTerminate();
             throw new RuntimeException("Initialization failed: " + e.getMessage(), e);
         }
@@ -76,26 +91,32 @@ public class Game {
         glOrtho(0, Main.width / zoom, 0, Main.height / zoom, ORTHO_NEAR, ORTHO_FAR);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
+        Log.info("Projection matrix set up with dimensions: " + Main.width + "x" + Main.height + ", zoom: " + zoom);
     }
 
     private void loop() {
+        Log.info("Entering game loop");
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
-            if (PauseMenu.isPaused.get()) continue;
+            if (PauseMenu.isPaused.get()) {
+                continue;
+            }
 
             update();
             render();
             glfwSwapBuffers(window);
         }
+        Log.info("Game loop ended");
     }
 
     private void update() {
         Player.handleMovement();
         Player.handlePlatforms();
-        Player.velocityY -= 0.5f; // gravity
+        Player.velocityY -= 0.5f;
         Player.Y += Player.velocityY;
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            Log.info("Escape key pressed. Showing pause menu.");
             PauseMenu.show(window);
         }
 
@@ -118,7 +139,6 @@ public class Game {
         cameraY += (Player.Y - cameraY - (Main.height / (2 * zoom))) * 0.1f;
     }
 
-
     private void render() {
         glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -129,8 +149,12 @@ public class Game {
 
         drawRect(Player.X, Player.Y, Player.Width, Player.Height, "#FF3131");
 
+        int visiblePlatforms = 0;
         for (Platform platform : Maps.platforms) {
-            drawRect(platform.x(), platform.y(), platform.width(), platform.height(), platform.color());
+            if (isRectVisible(platform.x(), platform.y(), platform.width(), platform.height())) {
+                drawRect(platform.x(), platform.y(), platform.width(), platform.height(), platform.color());
+                visiblePlatforms++;
+            }
         }
     }
 

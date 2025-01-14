@@ -3,6 +3,7 @@ package dev.xdpxi.pixelleap.Entities;
 import dev.xdpxi.pixelleap.Game;
 import dev.xdpxi.pixelleap.Maps;
 import dev.xdpxi.pixelleap.Platform;
+import dev.xdpxi.pixelleap.Util.Log;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -29,6 +30,7 @@ public class Player {
 
     public static void handlePlatforms() {
         if (checkColorCollision("#0FFF50")) {
+            Log.info("Player reached map switch platform");
             Maps.switchMaps();
         }
         if (checkColorCollision("#FFAA33")) {
@@ -38,6 +40,7 @@ public class Player {
         handleColorCollision("#7F00FF", 1);
         handleColorCollision("#000000", -5);
         if (checkColorCollision("#FF2400")) {
+            Log.info("Player hit reset platform");
             resetPos();
         }
     }
@@ -56,6 +59,7 @@ public class Player {
     public static void resetPos() {
         X = 100f;
         Y = 100f;
+        Log.info("Player position reset to X: " + X + ", Y: " + Y);
     }
 
     public static boolean checkColorCollision(String color) {
@@ -75,6 +79,7 @@ public class Player {
     public static float getAdjustedSpeed() {
         for (Platform platform : Maps.platforms) {
             if (checkCollision(platform) && "#FF10F0".equals(platform.color())) {
+                Log.debug("Speed boost applied");
                 return 10f;
             }
         }
@@ -84,6 +89,7 @@ public class Player {
     public static float getAdjustedJump() {
         for (Platform platform : Maps.platforms) {
             if (checkCollision(platform) && "#FFAA33".equals(platform.color())) {
+                Log.debug("Jump boost applied");
                 return 20f;
             }
         }

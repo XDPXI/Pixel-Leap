@@ -1,6 +1,7 @@
 package dev.xdpxi.pixelleap;
 
 import dev.xdpxi.pixelleap.Entities.Player;
+import dev.xdpxi.pixelleap.Util.Log;
 
 public class Maps {
     // Map 1
@@ -42,6 +43,7 @@ public class Maps {
             new Platform(-5000f, -3000, 4000f, 6000f, "#000000"),
             new Platform(4000f, -4000, 4000f, 8000f, "#000000")
     };
+
     // Map 2
     public static final Platform[] map2 = {
             // Dirt - Brown
@@ -88,25 +90,35 @@ public class Maps {
     public static int currentMap = 1;
 
     public static Platform[] getMap(String mapID) {
-        return switch (mapID) {
+        Log.debug("Getting map for mapID: " + mapID);
+        Platform[] selectedMap = switch (mapID) {
             case "map2" -> map2;
             case "map3" -> map3;
             default -> map1;
         };
+        Log.info("Selected map: " + mapID + " with " + selectedMap.length + " platforms");
+        return selectedMap;
     }
 
     public static void switchMaps() {
+        Log.info("Switching maps. Current map: " + currentMap);
         switch (currentMap) {
             case 1:
                 platforms = Maps.getMap("map2");
                 currentMap = 2;
                 Player.resetPos();
+                Log.info("Switched to map 2");
                 break;
             case 2:
                 platforms = Maps.getMap("map3");
                 currentMap = 3;
                 Player.resetPos();
+                Log.info("Switched to map 3");
+                break;
+            default:
+                Log.warn("Attempted to switch from unknown map: " + currentMap);
                 break;
         }
+        Log.debug("New map has " + platforms.length + " platforms");
     }
 }
