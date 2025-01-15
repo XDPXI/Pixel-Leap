@@ -2,43 +2,43 @@ package dev.xdpxi.pixelleap.Util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class Log {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-    private static final BlockingQueue<String> logQueue = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<LogEntry> logQueue = new LinkedBlockingQueue<>(10000);
     private static final LogLevel currentLogLevel = LogLevel.INFO;
+    private static final ExecutorService logExecutor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "LoggerThread");
+        t.setDaemon(true);
+        return t;
+    });
 
     static {
-        Thread loggerThread = new Thread(Log::processLogQueue);
-        loggerThread.setDaemon(true);
-        loggerThread.start();
+        logExecutor.submit(Log::processLogQueue);
+        Runtime.getRuntime().addShutdownHook(new Thread(Log::shutdown));
     }
 
     private static void log(LogLevel level, String message, Object... args) {
         if (level.ordinal() >= currentLogLevel.ordinal()) {
-            String formattedDateTime = LocalDateTime.now().format(FORMATTER);
-            String formattedMessage = args.length > 0 ? String.format(message, args) : message;
-            String logEntry = String.format("[%s] [%s] %s", formattedDateTime, level, formattedMessage);
-            if (!logQueue.offer(logEntry)) {
-                System.err.println("Failed to add log entry to queue: " + logEntry);
+            LogEntry entry = new LogEntry(level, message, args);
+            if (!logQueue.offer(entry)) {
+                System.err.println("Log queue full, discarding log entry: " + entry);
             }
         }
     }
 
     private static void processLogQueue() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
-                String logEntry = logQueue.poll(100, TimeUnit.MILLISECONDS);
-                if (logEntry != null) {
-                    System.out.println(logEntry);
+                LogEntry entry = logQueue.poll(100, TimeUnit.MILLISECONDS);
+                if (entry != null) {
+                    String formattedDateTime = LocalDateTime.now().format(FORMATTER);
+                    String formattedMessage = entry.args.length > 0 ? String.format(entry.message, entry.args) : entry.message;
+                    System.out.printf("[%s] [%s] : %s%n", formattedDateTime, entry.level, formattedMessage);
                 }
             } catch (InterruptedException e) {
-                System.err.println("Error in log processing: " + e.getMessage());
                 Thread.currentThread().interrupt();
-                break;
             }
         }
     }
@@ -57,6 +57,20 @@ public class Log {
 
     public static void error(String message, Object... args) {
         log(LogLevel.ERROR, message, args);
+    }
+
+    private static void shutdown() {
+        logExecutor.shutdownNow();
+        try {
+            if (!logExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                System.err.println("Logger thread did not terminate in time");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private record LogEntry(LogLevel level, String message, Object[] args) {
     }
 
     public enum LogLevel {

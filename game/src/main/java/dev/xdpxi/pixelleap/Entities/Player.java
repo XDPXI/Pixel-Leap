@@ -2,7 +2,6 @@ package dev.xdpxi.pixelleap.Entities;
 
 import dev.xdpxi.pixelleap.Game;
 import dev.xdpxi.pixelleap.Maps;
-import dev.xdpxi.pixelleap.Platform;
 import dev.xdpxi.pixelleap.Util.Log;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -63,7 +62,7 @@ public class Player {
     }
 
     public static boolean checkColorCollision(String color) {
-        for (Platform platform : Maps.platforms) {
+        for (Maps.Platform platform : Maps.platforms) {
             if (checkCollision(platform) && color.equals(platform.color())) {
                 return true;
             }
@@ -71,13 +70,13 @@ public class Player {
         return false;
     }
 
-    public static boolean checkCollision(Platform platform) {
+    public static boolean checkCollision(Maps.Platform platform) {
         return X + Width > platform.x() && X < platform.x() + platform.width() &&
                 Y <= platform.y() + platform.height() && Y + Height >= platform.y();
     }
 
     public static float getAdjustedSpeed() {
-        for (Platform platform : Maps.platforms) {
+        for (Maps.Platform platform : Maps.platforms) {
             if (checkCollision(platform) && "#FF10F0".equals(platform.color())) {
                 Log.debug("Speed boost applied");
                 return 10f;
@@ -87,7 +86,7 @@ public class Player {
     }
 
     public static float getAdjustedJump() {
-        for (Platform platform : Maps.platforms) {
+        for (Maps.Platform platform : Maps.platforms) {
             if (checkCollision(platform) && "#FFAA33".equals(platform.color())) {
                 Log.debug("Jump boost applied");
                 return 20f;

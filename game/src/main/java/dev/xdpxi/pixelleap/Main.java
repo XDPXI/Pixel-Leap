@@ -8,6 +8,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
     public static int width = 1920;
@@ -15,25 +16,9 @@ public class Main {
 
     public static void main(String[] args) {
         Log.info("Application started");
-        String mapNumber = null;
 
-        Log.info("Parsing command line arguments");
-        for (int i = 0; i < args.length; i++) {
-            if ("--map".equals(args[i]) || args[i].startsWith("--map=")) {
-                if (args[i].contains("=")) {
-                    mapNumber = args[i].split("=")[1];
-                } else if (i + 1 < args.length) {
-                    mapNumber = args[i + 1];
-                }
-                Log.info("Map number specified: " + mapNumber);
-                break;
-            }
-        }
-
-        Log.info("Retrieving screen dimensions");
+        String mapNumber = parseMapNumber(args);
         getWidthAndHeight();
-
-        Log.info("Setting look and feel");
         setLookAndFeel();
 
         if (mapNumber != null) {
@@ -45,37 +30,32 @@ public class Main {
         }
     }
 
+    private static String parseMapNumber(String[] args) {
+        Log.info("Parsing command line arguments");
+        return Arrays.stream(args)
+                .filter(arg -> arg.startsWith("--map"))
+                .findFirst()
+                .map(arg -> arg.contains("=") ? arg.split("=")[1] : args[Arrays.asList(args).indexOf(arg) + 1])
+                .orElse(null);
+    }
+
     private static void getWidthAndHeight() {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice[] devices = ge.getScreenDevices();
-
-        Log.info("Detected " + devices.length + " monitor(s)");
-        for (int i = 0; i < devices.length; i++) {
-            DisplayMode displayMode = devices[i].getDisplayMode();
-            Log.info("Monitor " + (i + 1) + ":");
-            Log.info("Width: " + displayMode.getWidth() + " px");
-            Log.info("Height: " + displayMode.getHeight() + " px");
-
-            width = displayMode.getWidth();
-            height = displayMode.getHeight();
-        }
+        Log.info("Retrieving screen dimensions");
+        GraphicsDevice defaultScreen = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        DisplayMode displayMode = defaultScreen.getDisplayMode();
+        width = displayMode.getWidth();
+        height = displayMode.getHeight();
         Log.info("Using dimensions: " + width + "x" + height);
     }
 
     private static void setLookAndFeel() {
+        Log.info("Setting look and feel");
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
             Log.info("FlatDarkLaf look and feel set successfully");
         } catch (UnsupportedLookAndFeelException e) {
-            Log.error("Failed to set FlatDarkLaf look and feel");
-            showError(e);
-        }
-    }
-
-    private static void showError(Exception e) {
-        JOptionPane.showMessageDialog(null, "Failed to set FlatDarkLaf look and feel");
-        if (e != null) {
             Log.error("Failed to set FlatDarkLaf look and feel", e);
+            JOptionPane.showMessageDialog(null, "Failed to set FlatDarkLaf look and feel");
         }
     }
 
@@ -87,7 +67,6 @@ public class Main {
         Log.info("Current file: " + currentFile);
 
         if (!currentFile.exists()) {
-            Log.error("Unable to locate the running application file.");
             throw new IOException("Unable to locate the running application file.");
         }
 
@@ -95,22 +74,13 @@ public class Main {
         command.add(javaBin);
 
         if (currentFile.getName().endsWith(".jar")) {
-            Log.info("Running from JAR file");
-            command.add("-jar");
-            command.add(currentFile.getPath());
-            command.add("--map=" + mapID);
+            command.addAll(Arrays.asList("-jar", currentFile.getPath(), "--map=" + mapID));
         } else {
-            Log.info("Running from class files");
-            command.add("-cp");
-            command.add(currentFile.getPath());
-            command.add(Main.class.getName());
-            command.add("--map=" + mapID);
+            command.addAll(Arrays.asList("-cp", currentFile.getPath(), Main.class.getName(), "--map=" + mapID));
         }
 
         Log.info("Executing command: " + String.join(" ", command));
-        ProcessBuilder processBuilder = new ProcessBuilder(command.toArray(new String[0]))
-                .inheritIO();
-        processBuilder.start();
+        new ProcessBuilder(command).inheritIO().start();
 
         Log.info("New process started. Exiting current process.");
         System.exit(0);

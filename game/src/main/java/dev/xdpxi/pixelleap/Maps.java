@@ -121,4 +121,7 @@ public class Maps {
         }
         Log.debug("New map has " + platforms.length + " platforms");
     }
+
+    public record Platform(float x, float y, float width, float height, String color) {
+    }
 }

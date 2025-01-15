@@ -112,7 +112,7 @@ public class Game {
         Player.Y += Player.velocityY;
 
         Player.isGrounded = false;
-        for (Platform platform : Maps.platforms) {
+        for (Maps.Platform platform : Maps.platforms) {
             if (Player.checkCollision(platform)) {
                 Player.Y = platform.y() + platform.height();
                 Player.velocityY = 0;
@@ -141,7 +141,7 @@ public class Game {
         drawRect(Player.X, Player.Y, Player.Width, Player.Height, "#FF3131");
 
         int visiblePlatforms = 0;
-        for (Platform platform : Maps.platforms) {
+        for (Maps.Platform platform : Maps.platforms) {
             if (isRectVisible(platform.x(), platform.y(), platform.width(), platform.height())) {
                 drawRect(platform.x(), platform.y(), platform.width(), platform.height(), platform.color());
                 visiblePlatforms++;
