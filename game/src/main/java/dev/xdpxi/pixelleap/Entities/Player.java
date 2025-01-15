@@ -11,8 +11,8 @@ public class Player {
     public static final float Width = 50f;
     public static final float Height = 50f;
     public static boolean isGrounded = false;
-    public static float X = 100f;
-    public static float Y = 100f;
+    public static float X = 0f;
+    public static float Y = 0f;
     public static float velocityY = 0f;
 
     public static void handleMovement() {
@@ -57,8 +57,8 @@ public class Player {
     }
 
     public static void resetPos() {
-        X = 100f;
-        Y = 100f;
+        X = 0f;
+        Y = 0f;
         Log.info("Player position reset to X: " + X + ", Y: " + Y);
     }
 
