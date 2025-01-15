@@ -1,7 +1,6 @@
 package dev.xdpxi.pixelleap;
 
 import dev.xdpxi.pixelleap.Entities.Player;
-import dev.xdpxi.pixelleap.GUI.PauseMenu;
 import dev.xdpxi.pixelleap.Util.Log;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -98,9 +97,6 @@ public class Game {
         Log.info("Entering game loop");
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
-            if (PauseMenu.isPaused.get()) {
-                continue;
-            }
 
             update();
             render();
@@ -114,11 +110,6 @@ public class Game {
         Player.handlePlatforms();
         Player.velocityY -= 0.5f;
         Player.Y += Player.velocityY;
-
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-            Log.info("Escape key pressed. Showing pause menu.");
-            PauseMenu.show(window);
-        }
 
         Player.isGrounded = false;
         for (Platform platform : Maps.platforms) {
