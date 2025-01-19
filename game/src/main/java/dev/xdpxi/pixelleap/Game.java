@@ -48,6 +48,10 @@ public class Game {
     private float cameraY = 0f;
 
     public static void main(String[] args) {
+        if (System.getProperty("os.name").toLowerCase().contains("mac") && !System.getProperty("java.vm.name").toLowerCase().contains("openjdk")) {
+            Log.error("On macOS, this application must be run with -XstartOnFirstThread JVM argument");
+            System.exit(1);
+        }
         Log.info("Game main method called");
         new Game().run("map1", Maps.currentMap);
     }
@@ -107,10 +111,19 @@ public class Game {
             Log.info("Setting up projection matrix");
             setupProjectionMatrix();
             Log.info("Game initialization completed successfully");
+        } catch (IllegalStateException e) {
+            Log.error("GLFW initialization failed: " + e.getMessage(), e);
+            throw e;
+        } catch (RuntimeException e) {
+            Log.error("Window creation failed: " + e.getMessage(), e);
+            throw e;
         } catch (Exception e) {
-            Log.error("Initialization failed: " + e.getMessage(), e);
-            glfwTerminate();
+            Log.error("Unexpected error during initialization: " + e.getMessage(), e);
             throw new RuntimeException("Initialization failed: " + e.getMessage(), e);
+        } finally {
+            if (window == NULL) {
+                glfwTerminate();
+            }
         }
     }
 

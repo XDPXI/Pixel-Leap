@@ -1,14 +1,20 @@
 package dev.xdpxi.pixelleap;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import dev.xdpxi.pixelleap.Util.Log;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.DisplayMode;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import com.formdev.flatlaf.FlatDarkLaf;
+
+import dev.xdpxi.pixelleap.Util.Log;
 
 public class Main {
     public static int width = 1920;
@@ -16,6 +22,10 @@ public class Main {
 
     public static void main(String[] args) {
         Log.info("Application started");
+        if (System.getProperty("os.name").toLowerCase().contains("mac") && !System.getProperty("java.vm.name").toLowerCase().contains("openjdk")) {
+            Log.error("On macOS, this application must be run with -XstartOnFirstThread JVM argument");
+            System.exit(1);
+        }
 
         String mapNumber = parseMapNumber(args);
         getWidthAndHeight();
