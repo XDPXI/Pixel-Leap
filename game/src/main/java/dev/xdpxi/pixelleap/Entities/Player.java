@@ -1,18 +1,10 @@
 package dev.xdpxi.pixelleap.Entities;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.glfwGetKey;
-
 import dev.xdpxi.pixelleap.Game;
 import dev.xdpxi.pixelleap.Maps;
 import dev.xdpxi.pixelleap.Util.Log;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Player {
     public static final float WIDTH = 50f;

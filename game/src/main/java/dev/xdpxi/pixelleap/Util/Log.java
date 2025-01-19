@@ -2,11 +2,7 @@ package dev.xdpxi.pixelleap.Util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class Log {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
@@ -74,10 +70,10 @@ public class Log {
         }
     }
 
-    private record LogEntry(LogLevel level, String message, Object[] args) {
-    }
-
     public enum LogLevel {
         DEBUG, INFO, WARN, ERROR
+    }
+
+    private record LogEntry(LogLevel level, String message, Object[] args) {
     }
 }

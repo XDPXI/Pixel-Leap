@@ -1,20 +1,14 @@
 package dev.xdpxi.pixelleap;
 
-import java.awt.DisplayMode;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
+import com.formdev.flatlaf.FlatDarkLaf;
+import dev.xdpxi.pixelleap.Util.Log;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-import com.formdev.flatlaf.FlatDarkLaf;
-
-import dev.xdpxi.pixelleap.Util.Log;
 
 public class Main {
     public static int width = 1920;
