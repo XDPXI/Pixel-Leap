@@ -32,9 +32,9 @@ public class Player {
             Log.info("Player reached map switch platform");
             Maps.switchMaps();
         }
-        if (checkColorCollision("#0FFF50")) {
-            Log.info("Player reached map switch platform");
-            Maps.switchMaps();
+        if (checkColorCollision("#FFAA33")) {
+            velocityY = getAdjustedJump();
+            isGrounded = false;
         }
         if (checkColorCollision("#7F00FA")) {
             Log.info("Player reached map switch platform");
