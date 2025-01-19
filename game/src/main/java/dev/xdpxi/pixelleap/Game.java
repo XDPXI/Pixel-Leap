@@ -170,11 +170,9 @@ public class Game {
 
         drawRect(Player.X, Player.Y, Player.WIDTH, Player.HEIGHT, "#FF3131");
 
-        int visiblePlatforms = 0;
         for (Maps.Platform platform : Maps.platforms) {
             if (isRectVisible(platform.x(), platform.y(), platform.width(), platform.height())) {
                 drawRect(platform.x(), platform.y(), platform.width(), platform.height(), platform.color());
-                visiblePlatforms++;
             }
         }
     }
