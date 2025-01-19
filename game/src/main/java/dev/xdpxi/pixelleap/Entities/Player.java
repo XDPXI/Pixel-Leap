@@ -1,14 +1,22 @@
 package dev.xdpxi.pixelleap.Entities;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.glfwGetKey;
+
 import dev.xdpxi.pixelleap.Game;
 import dev.xdpxi.pixelleap.Maps;
 import dev.xdpxi.pixelleap.Util.Log;
 
-import static org.lwjgl.glfw.GLFW.*;
-
 public class Player {
-    public static final float Width = 50f;
-    public static final float Height = 50f;
+    public static final float WIDTH = 50f;
+    public static final float HEIGHT = 50f;
     public static boolean isGrounded = false;
     public static float X = 0f;
     public static float Y = 0f;
@@ -83,8 +91,8 @@ public class Player {
     }
 
     public static boolean checkCollision(Maps.Platform platform) {
-        return X + Width > platform.x() && X < platform.x() + platform.width() &&
-                Y <= platform.y() + platform.height() && Y + Height >= platform.y();
+        return X + WIDTH > platform.x() && X < platform.x() + platform.width() &&
+                Y <= platform.y() + platform.height() && Y + HEIGHT >= platform.y();
     }
 
     public static float getAdjustedSpeed() {

@@ -1,13 +1,43 @@
 package dev.xdpxi.pixelleap;
 
-import dev.xdpxi.pixelleap.Entities.Player;
-import dev.xdpxi.pixelleap.Util.Log;
+import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL46.*;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glScalef;
+import static org.lwjgl.opengl.GL11.glTranslatef;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 import static org.lwjgl.system.MemoryUtil.NULL;
+
+import dev.xdpxi.pixelleap.Entities.Player;
+import dev.xdpxi.pixelleap.Util.Log;
 
 public class Game {
     private static final double ORTHO_NEAR = -1.0;
@@ -138,7 +168,7 @@ public class Game {
         glScalef(zoom, zoom, 1);
         glTranslatef(-cameraX, -cameraY, 0);
 
-        drawRect(Player.X, Player.Y, Player.Width, Player.Height, "#FF3131");
+        drawRect(Player.X, Player.Y, Player.WIDTH, Player.HEIGHT, "#FF3131");
 
         int visiblePlatforms = 0;
         for (Maps.Platform platform : Maps.platforms) {

@@ -148,25 +148,23 @@ public class Maps {
     }
 
     public static void switchMaps() {
-            Log.info("Switching maps. Current map: " + currentMap);
-            switch (currentMap) {
-                case 1:
-                    platforms = Maps.getMap("map2");
-                    currentMap = 2;
-                    Player.resetPos();
-                    Log.info("Switched to map 2");
-                    break;
-                case 2:
-                    platforms = Maps.getMap("map3");
-                    currentMap = 3;
-                    Player.X = 600f;
-                    Player.Y = 0f;
-                    Log.info("Switched to map 3");
-                    break;
-                default:
-                    Log.warn("Attempted to switch from unknown map: " + currentMap);
-                    break;
+        Log.info("Switching maps. Current map: " + currentMap);
+        switch (currentMap) {
+            case 1 -> {
+                platforms = Maps.getMap("map2");
+                currentMap = 2;
+                Player.resetPos();
+                Log.info("Switched to map 2");
             }
+            case 2 -> {
+                platforms = Maps.getMap("map3");
+                currentMap = 3;
+                Player.X = 600f;
+                Player.Y = 0f;
+                Log.info("Switched to map 3");
+            }
+            default -> Log.warn("Attempted to switch from unknown map: " + currentMap);
+        }
         Log.debug("New map has " + platforms.length + " platforms");
     }
 
