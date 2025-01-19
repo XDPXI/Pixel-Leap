@@ -32,9 +32,21 @@ public class Player {
             Log.info("Player reached map switch platform");
             Maps.switchMaps();
         }
-        if (checkColorCollision("#FFAA33")) {
-            velocityY = getAdjustedJump();
-            isGrounded = false;
+        if (checkColorCollision("#0FFF50")) {
+            Log.info("Player reached map switch platform");
+            Maps.switchMaps();
+        }
+        if (checkColorCollision("#7F00FA")) {
+            Log.info("Player reached map switch platform");
+            Maps.platforms = Maps.map3a;
+        }
+        if (checkColorCollision("#7F00FB")) {
+            Log.info("Player reached map switch platform");
+            Maps.platforms = Maps.map3b;
+        }
+        if (checkColorCollision("#7F00FC")) {
+            Log.info("Player reached map switch platform");
+            Maps.platforms = Maps.map3c;
         }
         handleColorCollision("#7F00FF", 1);
         handleColorCollision("#000000", -5);

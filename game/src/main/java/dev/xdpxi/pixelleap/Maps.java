@@ -82,9 +82,56 @@ public class Maps {
             // Grass - Green
             new Platform(-5000f, -100f, 10000f, 100f, "#228B22"),
 
+            // Map Teleporter - Purple
+            new Platform(200f, 100f, 200f, 20f, "#7F00FA"),
+            new Platform(550f, 100f, 200f, 20f, "#7F00FB"),
+            new Platform(900f, 100f, 200f, 20f, "#7F00FC"),
+
             // Void - Black
             new Platform(-5000f, -2000, 4000f, 4000f, "#000000"),
-            new Platform(4000f, -2000, 4000f, 4000f, "#000000")
+            new Platform(2500f, -2000, 4000f, 4000f, "#000000")
+    };
+    // Map 3A
+    public static final Platform[] map3a = {
+            // Dirt - Brown
+            new Platform(-5000f, -2000f, 10000f, 2000f, "#7B3F00"),
+            // Grass - Green
+            new Platform(-5000f, -100f, 10000f, 100f, "#228B22"),
+
+            // Map Teleporter - Purple
+            new Platform(200f, 100f, 200f, 20f, "#7F00FA"),
+
+            // Void - Black
+            new Platform(-5000f, -2000, 4000f, 4000f, "#000000"),
+            new Platform(2500f, -2000, 4000f, 4000f, "#000000")
+    };
+    // Map 3B
+    public static final Platform[] map3b = {
+            // Dirt - Brown
+            new Platform(-5000f, -2000f, 10000f, 2000f, "#7B3F00"),
+            // Grass - Green
+            new Platform(-5000f, -100f, 10000f, 100f, "#228B22"),
+
+            // Map Teleporter - Purple
+            new Platform(550f, 100f, 200f, 20f, "#7F00FB"),
+
+            // Void - Black
+            new Platform(-5000f, -2000, 4000f, 4000f, "#000000"),
+            new Platform(2500f, -2000, 4000f, 4000f, "#000000")
+    };
+    // Map 3C
+    public static final Platform[] map3c = {
+            // Dirt - Brown
+            new Platform(-5000f, -2000f, 10000f, 2000f, "#7B3F00"),
+            // Grass - Green
+            new Platform(-5000f, -100f, 10000f, 100f, "#228B22"),
+
+            // Map Teleporter - Purple
+            new Platform(900f, 100f, 200f, 20f, "#7F00FC"),
+
+            // Void - Black
+            new Platform(-5000f, -2000, 4000f, 4000f, "#000000"),
+            new Platform(2500f, -2000, 4000f, 4000f, "#000000")
     };
     public static Platform[] platforms = {};
     public static int currentMap = 1;
@@ -101,24 +148,25 @@ public class Maps {
     }
 
     public static void switchMaps() {
-        Log.info("Switching maps. Current map: " + currentMap);
-        switch (currentMap) {
-            case 1:
-                platforms = Maps.getMap("map2");
-                currentMap = 2;
-                Player.resetPos();
-                Log.info("Switched to map 2");
-                break;
-            case 2:
-                platforms = Maps.getMap("map3");
-                currentMap = 3;
-                Player.resetPos();
-                Log.info("Switched to map 3");
-                break;
-            default:
-                Log.warn("Attempted to switch from unknown map: " + currentMap);
-                break;
-        }
+            Log.info("Switching maps. Current map: " + currentMap);
+            switch (currentMap) {
+                case 1:
+                    platforms = Maps.getMap("map2");
+                    currentMap = 2;
+                    Player.resetPos();
+                    Log.info("Switched to map 2");
+                    break;
+                case 2:
+                    platforms = Maps.getMap("map3");
+                    currentMap = 3;
+                    Player.X = 600f;
+                    Player.Y = 0f;
+                    Log.info("Switched to map 3");
+                    break;
+                default:
+                    Log.warn("Attempted to switch from unknown map: " + currentMap);
+                    break;
+            }
         Log.debug("New map has " + platforms.length + " platforms");
     }
 
